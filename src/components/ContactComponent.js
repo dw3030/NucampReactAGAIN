@@ -28,9 +28,7 @@ class Contact extends Component {
                 email: false
             }
         };
-
         this.handleSubmit = this.handleSubmit.bind(this);
-
     }
     
 
@@ -41,9 +39,7 @@ class Contact extends Component {
     
 
     render() {
-
         return (
-
                 <div className="container">
                     <div className="row">
                         <div className="col">
@@ -71,7 +67,6 @@ class Contact extends Component {
                         </div>
                     </div>  
 
-{/* added controlled form */}
                     <div className="row row-content">
                     <div className="col-12">
                         <h2>Send us your Feedback</h2>
