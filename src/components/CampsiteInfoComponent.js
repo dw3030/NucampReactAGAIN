@@ -4,24 +4,64 @@ import {
   CardImg,
   CardBody,
   CardText,
-  CardTitle,
   Breadcrumb,
   BreadcrumbItem,
   Button,
   Modal,
   ModalHeader,
   ModalBody,
-  Form,
-  FormGroup,
-  Input,
   Label,
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Control, LocalForm, Errors } from "react-redux-form";
+// import { addComments } from "@babel/types";
+// import addComment from "../redux/ActionCreators";
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !val || val.length <= len;
 const minLength = (len) => (val) => val && val.length >= len;
+
+function RenderCampsite({ campsite }) {
+  return (
+    <div className="col-md-5 m-1">
+      <Card>
+        <CardImg top src={campsite.image} alt={campsite.name} />
+        <CardBody>
+          <CardText>{campsite.description}</CardText>
+        </CardBody>
+      </Card>
+    </div>
+  );
+}
+
+// i feel like the issue is in here somewhere...
+
+function RenderComments({ comments, addComment, campsiteId }) {
+  if (comments) {
+    return (
+      <div className="col-md-5 m-1">
+        <h4>Comments</h4>
+        {comments.map((comment) => {
+          return (
+            <div key={comment.id}>
+              <p>
+                {comment.text} <br />
+                --{comment.author},{" "}
+                {new Intl.DateTimeFormat("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "2-digit",
+                }).format(new Date(Date.parse(comment.date)))}
+              </p>
+            </div>
+          );
+        })}
+        <CommentForm campsiteId={campsiteId} addComment={addComment} />
+      </div>
+    );
+  }
+  return <div></div>;
+}
 
 class CommentForm extends Component {
   constructor(props) {
@@ -40,16 +80,20 @@ class CommentForm extends Component {
   }
 
   handleSubmit(values) {
-    console.log("Current state is: " + JSON.stringify(values));
-    alert("Current state is: " + JSON.stringify(values));
+    this.toggleModal();
+    this.props.addComment(
+      this.props.campsiteId,
+      values.rating,
+      values.author,
+      values.text
+    );
   }
 
   render() {
     return (
       <React.Fragment>
         <Button outline onClick={this.toggleModal}>
-          <i className="fa fa-pencil fa-lg" aria-hidden="true"></i> Submit
-          Comment
+          <i className="fa fa-pencil fa-lg"></i> Submit Comment
         </Button>
 
         <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
@@ -119,42 +163,6 @@ class CommentForm extends Component {
   }
 }
 
-function RenderCampsite({ campsite }) {
-  return (
-    <div className="col-md-5 m-1">
-      <Card>
-        <CardImg top src={campsite.image} alt={campsite.name} />
-        <CardBody>
-          <CardText>{campsite.description}</CardText>
-        </CardBody>
-      </Card>
-    </div>
-  );
-}
-
-function RenderComments({ comments }) {
-  if (comments) {
-    return (
-      <div className="col-md-5 m-1">
-        <h4>Comments</h4>
-        {comments.map((comment) => (
-          <p>
-            {comment.text} <br />
-            --{comment.author},{" "}
-            {new Intl.DateTimeFormat("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "2-digit",
-            }).format(new Date(Date.parse(comment.date)))}
-          </p>
-        ))}
-        <CommentForm />
-      </div>
-    );
-  }
-  return <div></div>;
-}
-
 function CampsiteInfo(props) {
   if (props.campsite) {
     return (
@@ -173,7 +181,11 @@ function CampsiteInfo(props) {
         </div>
         <div className="row">
           <RenderCampsite campsite={props.campsite} />
-          <RenderComments comments={props.comments} />
+          <RenderComments
+            comments={props.comments}
+            addComment={props.addComment}
+            campsiteId={props.campsite.id}
+          />
         </div>
       </div>
     );
