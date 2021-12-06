@@ -241,7 +241,7 @@ export const postFeedback = (feedback) => () => {
     )
     .then((response) => response.json())
     .then((response) => {
-      alert("Thank you for your feedback: " + JSON.stringify(response));
+      alert("Thank you for your feedback! " + JSON.stringify(response));
     })
     .catch((error) => {
       console.log("post feedback", error.message);
